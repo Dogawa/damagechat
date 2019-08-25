@@ -21,9 +21,12 @@ import android.widget.TextView;
 
 import com.rdc.p2p.R;
 import com.rdc.p2p.activity.ChatDetailActivity;
+import com.rdc.p2p.activity.NetchartActivity;
 import com.rdc.p2p.adapter.PeerListRvAdapter;
+import com.rdc.p2p.base.BaseActivity;
 import com.rdc.p2p.base.BaseFragment;
 import com.rdc.p2p.config.FileState;
+import com.rdc.p2p.config.Protocol;
 import com.rdc.p2p.event.LinkSocketRequestEvent;
 import com.rdc.p2p.bean.MessageBean;
 import com.rdc.p2p.bean.PeerBean;
@@ -169,7 +172,24 @@ public class PeerListFragment extends BaseFragment<PeerListPresenter> implements
                     showToast("正在建立Socket连接！");
                     mPresenter.linkPeer(peerBean.getUserIp());
                 }else {
-                    ChatDetailActivity.actionStart(mBaseActivity,peerBean.getUserIp(),peerBean.getNickName(),peerBean.getUserImageId());
+                    MessageBean shareMessage = new MessageBean(peerBean.getUserIp());
+                    shareMessage.setMine(true);
+                    shareMessage.setMsgType(Protocol.SHARE_SCREEN);
+                    Intent redirtItent = new Intent();
+                    redirtItent.setClass(mBaseActivity, NetchartActivity.class);
+//                    getInstance().sendMessage
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("IpAddress", peerBean.getUserIp());
+                    bundle.putBoolean("IsServer", false);
+
+                    redirtItent.putExtras(bundle);
+
+//                NetContext.getInstance().SendMsg = NetContext.getInstance().SendMsg + msg;
+//                NetContext.getInstance().IsSendMsg = true;
+
+                    startActivity(redirtItent);
+//                    ChatDetailActivity.actionStart(mBaseActivity,peerBean.getUserIp(),peerBean.getNickName(),peerBean.getUserImageId());
                 }
             }
 

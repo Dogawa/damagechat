@@ -50,7 +50,8 @@
         <activity
             android:name=".activity.PhotoActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activity.NetchartActivity"></activity>
+        <activity android:name=".activity.NetchartActivity"
+            android:screenOrientation="landscape"></activity>
         <service android:name=".service.TCPIPService"></service>
     </application>
 

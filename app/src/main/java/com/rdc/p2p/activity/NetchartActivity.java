@@ -147,7 +147,7 @@ public class NetchartActivity extends AppCompatActivity {
                     Toast.makeText(NetchartActivity.this,"等待对方来发送",Toast.LENGTH_LONG).show();
                     return;
                 }
-                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.demage_base);
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append("Image;");
                 // stringBuffer.append(MacroDefine.convertIconToString(bitsrc));
@@ -199,7 +199,7 @@ public class NetchartActivity extends AppCompatActivity {
             }else{
                 String image = strArr[1];
                 // bitsrc = MacroDefine.convertStringToBitmap(image);
-                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.demage_base);
                 // iv.setImageBitmap(bitmap);
                 setBitmap();
             }
