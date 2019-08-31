@@ -172,24 +172,15 @@ public class PeerListFragment extends BaseFragment<PeerListPresenter> implements
                     showToast("正在建立Socket连接！");
                     mPresenter.linkPeer(peerBean.getUserIp());
                 }else {
-                    MessageBean shareMessage = new MessageBean(peerBean.getUserIp());
-                    shareMessage.setMine(true);
-                    shareMessage.setMsgType(Protocol.SHARE_SCREEN);
                     Intent redirtItent = new Intent();
                     redirtItent.setClass(mBaseActivity, NetchartActivity.class);
-//                    getInstance().sendMessage
 
                     Bundle bundle = new Bundle();
                     bundle.putString("IpAddress", peerBean.getUserIp());
                     bundle.putBoolean("IsServer", false);
 
                     redirtItent.putExtras(bundle);
-
-//                NetContext.getInstance().SendMsg = NetContext.getInstance().SendMsg + msg;
-//                NetContext.getInstance().IsSendMsg = true;
-
                     startActivity(redirtItent);
-//                    ChatDetailActivity.actionStart(mBaseActivity,peerBean.getUserIp(),peerBean.getNickName(),peerBean.getUserImageId());
                 }
             }
 
@@ -243,6 +234,18 @@ public class PeerListFragment extends BaseFragment<PeerListPresenter> implements
             mPeerListRvAdapter.updateItemText(messageBean.getText(),messageBean.getUserIp());
         }
         EventBus.getDefault().post(messageBean);
+    }
+
+    public void onStartShareScreen(MessageBean messageBean) {
+        Intent redirtItent = new Intent();
+        redirtItent.setClass(mBaseActivity, NetchartActivity.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("IpAddress", messageBean.getUserIp());
+        bundle.putBoolean("IsServer", true);
+
+        redirtItent.putExtras(bundle);
+        startActivity(redirtItent);
     }
 
     @Override

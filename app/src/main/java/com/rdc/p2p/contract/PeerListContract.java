@@ -20,6 +20,7 @@ public interface PeerListContract {
         void linkPeerSuccess(String ip);
         void linkPeerError(String message,String targetIp);
         void initServerSocketSuccess();
+        void onStartShareScreen(MessageBean messageBean);
     }
 
     interface Model{
@@ -45,6 +46,7 @@ public interface PeerListContract {
         void serverSocketError(String msg);
         boolean isServerSocketConnected();
         void fileReceiving(MessageBean messageBean);
+        void onStartShareScreen(MessageBean messageBean);
     }
 
 }

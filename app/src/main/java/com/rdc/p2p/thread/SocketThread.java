@@ -327,7 +327,12 @@ public class SocketThread extends Thread {
                         mPresenter.messageReceived(textMsg);
                         break;
                     case Protocol.SHARE_SCREEN:
-                        mChatDetailPresenter.startScreenShare();
+                        MessageBean shareMessage = new MessageBean(mTargetIp);
+                        shareMessage.setUserIp(mTargetIp);
+                        shareMessage.setMsgType(Protocol.SHARE_SCREEN);
+                        shareMessage.save();
+//                        mChatDetailPresenter.startScreenShare();
+                        mPresenter.onStartShareScreen(shareMessage);
                         break;
                     case Protocol.IMAGE:
                         int size = dis.readInt();

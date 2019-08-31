@@ -25,7 +25,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.rdc.p2p.R;
+import com.rdc.p2p.bean.MessageBean;
+import com.rdc.p2p.config.Protocol;
+import com.rdc.p2p.manager.SocketManager;
 import com.rdc.p2p.service.TCPIPService;
+import com.rdc.p2p.thread.SocketThread;
 import com.rdc.p2p.util.MacroDefine;
 
 import java.io.File;
@@ -94,7 +98,14 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MacroDefine.BroadcastFilter.TCP_IP_BROADCASTSERVICEFILTER);
         registerReceiver(broadcastInformationReceiver, intentFilter);
+
+        initPaletteView();
         findViewById(R.id.btnStore).setOnClickListener(this);
+
+
+        if(IsServer) {
+            mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
+        }
 
         mBtnBg = (Button)findViewById(R.id.btnShareScreen);
         mBtnBg.setOnClickListener(new View.OnClickListener() {
@@ -104,10 +115,21 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(NetchartActivity.this,"等待对方来发送",Toast.LENGTH_LONG).show();
                     return;
                 }
-                StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append("Image;");
-                stringBuffer.append("text");
-                tcpIpBinder.addHandler(stringBuffer.toString());
+                SocketThread socketThread = SocketManager.getInstance().getSocketThreadByIp(IpAddress);
+
+                MessageBean shareMessage = new MessageBean(IpAddress);
+                shareMessage.setMine(true);
+                shareMessage.setMsgType(Protocol.SHARE_SCREEN);
+                if (socketThread != null){
+                    socketThread.sendMsg(shareMessage, -1);
+                }
+
+//                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
+
+//                StringBuffer stringBuffer = new StringBuffer();
+//                stringBuffer.append("Image;");
+//                stringBuffer.append("text");
+//                tcpIpBinder.addHandler(stringBuffer.toString());
                 mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
 
 //                mPaletteView.dispatchTouchEvent((float)409.78656,(float)210.61053,0);
@@ -117,7 +139,7 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
 
             }
         });
-        initPaletteView();
+
     }
 
     @Override
@@ -257,8 +279,9 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
                 float y = Float.parseFloat(strArr[2]);
                 int action = Integer.parseInt(strArr[3]);
                 mPaletteView.dispatchTouchEvent(x, y, action);
+                Log.e("NetchartActivity", "TcpIpBroadReceiver onReceive();" + strMsg);
             }else{
-                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
+//                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
             }
         }
     }

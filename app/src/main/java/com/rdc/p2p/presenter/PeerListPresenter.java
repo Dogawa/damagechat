@@ -159,4 +159,17 @@ public class PeerListPresenter extends BasePresenter<PeerListContract.View> impl
         }
     }
 
+    @Override
+    public void onStartShareScreen(final MessageBean messageBean) {
+        if (isAttachView()){
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getMvpView().onStartShareScreen(messageBean);
+                }
+            });
+        }
+    }
+
+
 }
