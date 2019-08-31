@@ -1,16 +1,16 @@
 <resources>
-    <string name="app_name">损管实时通信软件</string>
+    <string name="app_name">损管标绘软件</string>
     <string name="nickname">昵称</string>
     <string name="login">登录</string>
-    <string name="login_tip">损管实时通信软件</string>
+    <string name="login_tip">损管标绘软件</string>
     <string name="select_head_image">←选择头像</string>
-    <string name="scan_device_ing">正在扫描对等方</string>
+    <string name="scan_device_ing">损管标绘系统连接中</string>
     <string name="chat">聊天室</string>
     <string name="peers_list">成员列表</string>
     <string name="search_device">搜索对等方</string>
     <string name="open">打开</string>
     <string name="close">关闭</string>
-    <string name="loadingPeersInfo">加载成员信息</string>
+    <string name="loadingPeersInfo">损管标绘系统连接中</string>
     <string name="tip_none_peers">暂时没有其他成员哦！</string>
     <string name="send">发送</string>
     <string name="tip_pressed_start_record">按住 说话</string>
