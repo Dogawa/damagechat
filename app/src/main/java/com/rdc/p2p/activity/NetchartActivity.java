@@ -12,9 +12,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +28,10 @@ import android.widget.Toast;
 import com.rdc.p2p.R;
 import com.rdc.p2p.service.TCPIPService;
 import com.rdc.p2p.util.MacroDefine;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.UUID;
 
 
 /**
@@ -156,6 +164,29 @@ public class NetchartActivity extends AppCompatActivity {
                 setBitmap();
             }
         });
+        findViewById(R.id.btnStore).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
+                    String fileName = "damage" + UUID.randomUUID().toString();
+                    File file = new File(dir + fileName + ".jpg");
+                    Log.e("sssss",dir);
+
+                    FileOutputStream out = new FileOutputStream(file);
+                    bitcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    out.flush();
+                    out.close();
+                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    Uri uri = Uri.fromFile(file);
+                    intent.setData(uri);
+                    getApplication().sendBroadcast(intent);
+                    showToast(fileName + ".jpg "+ "图片已保存到本地");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -204,5 +235,9 @@ public class NetchartActivity extends AppCompatActivity {
                 setBitmap();
             }
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
 }
