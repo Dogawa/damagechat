@@ -1,5 +1,7 @@
 package com.rdc.p2p.activity;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,15 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,24 +29,29 @@ import com.rdc.p2p.service.TCPIPService;
 import com.rdc.p2p.util.MacroDefine;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 
 /**
  * Created by HeartDawn on 2017/5/4.
  */
-public class NetchartActivity extends AppCompatActivity {
+public class NetchartActivity extends AppCompatActivity implements View.OnClickListener, PaletteView.Callback,Handler.Callback{
 
-    private ImageView iv;
-    //原图
-    private Bitmap bitsrc;
-    //拷贝图
-    private Bitmap bitcopy;
-    private Canvas canvas;
-    private Paint paint;
-    private int startX;
-    private int startY;
+
+    private View mUndoView;
+    private View mRedoView;
+    private View mPenView;
+    private View mEraserView;
+    private View mClearView;
+    private PaletteView mPaletteView;
+    private ProgressDialog mSaveProgressDlg;
+    private static final int MSG_SAVE_SUCCESS = 1;
+    private static final int MSG_SAVE_FAILED = 2;
+    private Handler mHandler;
+
 
     private Button mBtnBg;
 
@@ -70,12 +74,11 @@ public class NetchartActivity extends AppCompatActivity {
         }
     };
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.netchart_activity);
-
-        iv = (ImageView) findViewById(R.id.imageViewBg);
 
         Bundle mBundle = this.getIntent().getExtras();
 
@@ -91,102 +94,30 @@ public class NetchartActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MacroDefine.BroadcastFilter.TCP_IP_BROADCASTSERVICEFILTER);
         registerReceiver(broadcastInformationReceiver, intentFilter);
-
-        // setBitmap();
-        /*
-        paint = new Paint();
-        paint.setStrokeWidth(5);
-        paint.setColor(Color.GREEN);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        baseBitmap = Bitmap.createBitmap(displayMetrics.widthPixels, displayMetrics.heightPixels,
-                Bitmap.Config.ARGB_8888);
-        System.out.println("图宽度："+iv.getWidth());
-        System.out.println("图高度："+iv.getHeight());
-        canvas = new Canvas(baseBitmap);
-        canvas.drawColor(Color.WHITE);*/
-
-        iv.setOnTouchListener(new View.OnTouchListener() {
-
-            // 设置手指开始的坐标
-            int startX;
-            int startY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN: // 手指第一次接触屏幕
-                        startX = (int) event.getX();
-                        startY = (int) event.getY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:// 手指在屏幕上滑动
-                        int newX = (int) event.getX();
-                        int newY = (int) event.getY();
-
-                        StringBuffer stringBuffer = new StringBuffer();
-                        stringBuffer.append("canvas;").append(startX+";").append(startY + ";").append(newX + ";").append(newY);
-
-                        // canvas.drawLine(startX, startY, newX, newY, paint);
-                        canvas.drawLine(startX, startY, newX, newY, paint);
-
-                        // 重新更新画笔的开始位置
-                        startX = (int) event.getX();
-                        startY = (int) event.getY();
-                        iv.setImageBitmap(bitcopy);
-
-                        tcpIpBinder.addHandler(stringBuffer.toString());
-                        break;
-                    case MotionEvent.ACTION_UP: // 手指离开屏幕
-                        break;
-
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
+        findViewById(R.id.btnStore).setOnClickListener(this);
 
         mBtnBg = (Button)findViewById(R.id.btnShareScreen);
         mBtnBg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // iv.setImageResource(R.drawable.bg);
                 if(IsServer){
                     Toast.makeText(NetchartActivity.this,"等待对方来发送",Toast.LENGTH_LONG).show();
                     return;
                 }
-                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.demage_base);
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append("Image;");
-                // stringBuffer.append(MacroDefine.convertIconToString(bitsrc));
                 stringBuffer.append("text");
                 tcpIpBinder.addHandler(stringBuffer.toString());
-                setBitmap();
-            }
-        });
-        findViewById(R.id.btnStore).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
-                    String fileName = "damage" + UUID.randomUUID().toString();
-                    File file = new File(dir + fileName + ".jpg");
-                    Log.e("sssss",dir);
+                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
 
-                    FileOutputStream out = new FileOutputStream(file);
-                    bitcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    out.flush();
-                    out.close();
-                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    Uri uri = Uri.fromFile(file);
-                    intent.setData(uri);
-                    getApplication().sendBroadcast(intent);
-                    showToast(fileName + ".jpg "+ "图片已保存到本地");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                mPaletteView.dispatchTouchEvent((float)409.78656,(float)210.61053,0);
+//                mPaletteView.dispatchTouchEvent((float)417.5566,(float)217.20905,2);
+//                mPaletteView.dispatchTouchEvent((float)545.3176,(float)477.84088,2);
+//                mPaletteView.dispatchTouchEvent((float)568.7038,(float)518.3256,1);
+
             }
         });
+        initPaletteView();
     }
 
     @Override
@@ -194,26 +125,127 @@ public class NetchartActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(broadcastInformationReceiver);
         unbindService(serviceConnection);
+        mHandler.removeMessages(MSG_SAVE_FAILED);
+        mHandler.removeMessages(MSG_SAVE_SUCCESS);
     }
 
-    public void setBitmap() {
-        // 加载画画板的背景图
-        // bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-        // 创建图片副本
-        // 1.在内存中创建一个与原图一模一样大小的bitmap对象，创建与原图大小一致的白纸
-        bitcopy = Bitmap.createBitmap(bitsrc.getWidth(), bitsrc.getHeight(),
-                bitsrc.getConfig());
-        // 2.创建画笔对象
-        paint = new Paint();
-        paint.setStrokeWidth(5);
-        paint.setColor(Color.GREEN);
-        // 3.创建画板对象，把白纸铺在画板上
-        canvas = new Canvas(bitcopy);
-        // 4.开始作画，把原图的内容绘制在白纸上
-        canvas.drawBitmap(bitsrc, new Matrix(), paint);
-        // 5.将绘制的图放入imageview中
-        iv.setImageBitmap(bitcopy);
+    private void initSaveProgressDlg(){
+        mSaveProgressDlg = new ProgressDialog(this);
+        mSaveProgressDlg.setMessage("正在保存,请稍候...");
+        mSaveProgressDlg.setCancelable(false);
     }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what){
+            case MSG_SAVE_FAILED:
+                mSaveProgressDlg.dismiss();
+                Toast.makeText(this,"保存失败",Toast.LENGTH_SHORT).show();
+                break;
+            case MSG_SAVE_SUCCESS:
+                mSaveProgressDlg.dismiss();
+                Toast.makeText(this,"图片已保存",Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
+    private static void scanFile(Context context, String filePath) {
+        Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        scanIntent.setData(Uri.fromFile(new File(filePath)));
+        context.sendBroadcast(scanIntent);
+    }
+
+    private static String saveImage(Bitmap bmp, int quality) {
+        if (bmp == null) {
+            return null;
+        }
+        File appDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (appDir == null) {
+            return null;
+        }
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(appDir, fileName);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, quality, fos);
+            fos.flush();
+            return file.getAbsolutePath();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void onUndoRedoStatusChanged() {
+        mUndoView.setEnabled(mPaletteView.canUndo());
+        mRedoView.setEnabled(mPaletteView.canRedo());
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.undo:
+                mPaletteView.undo();
+                break;
+            case R.id.redo:
+                mPaletteView.redo();
+                break;
+            case R.id.pen:
+                v.setSelected(true);
+                mEraserView.setSelected(false);
+                mPaletteView.setMode(PaletteView.Mode.DRAW);
+                break;
+            case R.id.eraser:
+                v.setSelected(true);
+                mPenView.setSelected(false);
+                mPaletteView.setMode(PaletteView.Mode.ERASER);
+                break;
+            case R.id.clear:
+                mPaletteView.clear();
+                break;
+            case R.id.btnStore:
+                saveImage();
+                break;
+
+        }
+    }
+
+    private void initPaletteView() {
+        mPaletteView = (PaletteView) findViewById(R.id.palette);
+        mPaletteView.setCallback(this);
+
+        mUndoView = findViewById(R.id.undo);
+        mRedoView = findViewById(R.id.redo);
+        mPenView = findViewById(R.id.pen);
+        mPenView.setSelected(true);
+        mEraserView = findViewById(R.id.eraser);
+        mClearView = findViewById(R.id.clear);
+
+        mUndoView.setOnClickListener(this);
+        mRedoView.setOnClickListener(this);
+        mPenView.setOnClickListener(this);
+        mEraserView.setOnClickListener(this);
+        mClearView.setOnClickListener(this);
+
+        mUndoView.setEnabled(false);
+        mRedoView.setEnabled(false);
+
+        mHandler = new Handler(this);
+    }
+
 
     public class TcpIpBroadReceiver extends BroadcastReceiver {
         @Override
@@ -221,23 +253,41 @@ public class NetchartActivity extends AppCompatActivity {
             String strMsg = intent.getStringExtra("MSG");
             String[] strArr = strMsg.split(";");
             if(strArr[0].equals("canvas")){
-                int startx = Integer.parseInt(strArr[1]);
-                int starty = Integer.parseInt(strArr[2]);
-                int endx = Integer.parseInt(strArr[3]);
-                int endy = Integer.parseInt(strArr[4]);
-                canvas.drawLine(startx, starty, endx, endy, paint);
-                iv.setImageBitmap(bitcopy);
+                float x = Float.parseFloat(strArr[1]);
+                float y = Float.parseFloat(strArr[2]);
+                int action = Integer.parseInt(strArr[3]);
+                mPaletteView.dispatchTouchEvent(x, y, action);
             }else{
-                String image = strArr[1];
-                // bitsrc = MacroDefine.convertStringToBitmap(image);
-                bitsrc = BitmapFactory.decodeResource(getResources(), R.drawable.demage_base);
-                // iv.setImageBitmap(bitmap);
-                setBitmap();
+                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
             }
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+    @Override
+    public void onPassTouchEvent(float x, float y, int action) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("canvas;" + Float.toString(x) + ";" + Float.toString(y) + ";" + Integer.toString(action));
+        Log.e("NetchartActivity", "onPassTouchEvent " + stringBuffer.toString());
+        tcpIpBinder.addHandler(stringBuffer.toString());
+    }
+
+    private void saveImage() {
+        if(mSaveProgressDlg==null){
+            initSaveProgressDlg();
+        }
+        mSaveProgressDlg.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bm = mPaletteView.buildBitmap();
+                String savedFile = saveImage(bm, 100);
+                if (savedFile != null) {
+                    scanFile(getApplicationContext(), savedFile);
+                    mHandler.obtainMessage(MSG_SAVE_SUCCESS).sendToTarget();
+                }else{
+                    mHandler.obtainMessage(MSG_SAVE_FAILED).sendToTarget();
+                }
+            }
+        }).start();
     }
 }

@@ -16,10 +16,50 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="保存"/>
+        <ImageView
+            android:id="@+id/undo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:src="@drawable/undo"
+            />
+        <ImageView
+            android:id="@+id/redo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:src="@drawable/redo"
+            />
+        <ImageView
+            android:id="@+id/pen"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:layout_weight="1"
+            android:src="@drawable/pen"
+            />
+        <ImageView
+            android:id="@+id/eraser"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:layout_weight="1"
+            android:src="@drawable/eraser"
+            />
+        <ImageView
+            android:id="@+id/clear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:scaleType="centerInside"
+            android:src="@drawable/clear"
+            />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageViewBg"
+    <com.rdc.p2p.activity.PaletteView
+        android:id="@+id/palette"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </LinearLayout>
