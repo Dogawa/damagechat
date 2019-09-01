@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.rdc.p2p"
+        applicationId "com.rdc.damage"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
@@ -22,7 +22,7 @@ android {
         variant ->
             variant.outputs.all {
                 //这里修改apk文件名
-                outputFileName = "p2pchat.apk"
+                outputFileName = "damage_screen.apk"
             }
     }
 }

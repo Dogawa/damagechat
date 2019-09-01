@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.rdc.p2p">
+    package="com.rdc.damage">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,17 +15,17 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name=".app.App"
+        android:name="com.rdc.damage.app.App"
         android:allowBackup="true"
         android:icon="@drawable/damage_control"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.rdc.damage.activity.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.rdc.damage.activity.LoginActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,12 +34,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.ChatDetailActivity"
+            android:name="com.rdc.damage.activity.ChatDetailActivity"
             android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.rdc.p2p.fileprovider"
+            android:authorities="com.rdc.damage.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -48,11 +48,11 @@
         </provider>
 
         <activity
-            android:name=".activity.PhotoActivity"
+            android:name="com.rdc.damage.activity.PhotoActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activity.NetchartActivity"
+        <activity android:name="com.rdc.damage.activity.NetchartActivity"
             android:screenOrientation="landscape"></activity>
-        <service android:name=".service.TCPIPService"></service>
+        <service android:name="com.rdc.damage.service.TCPIPService"></service>
     </application>
 
 </manifest>

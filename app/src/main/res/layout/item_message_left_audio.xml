@@ -27,7 +27,7 @@
         android:clickable="true"
         android:focusable="true">
 
-        <com.rdc.p2p.widget.PlayerSoundView
+        <com.rdc.damage.widget.PlayerSoundView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="10dp"

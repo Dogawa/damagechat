@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.PhotoActivity">
+    tools:context="com.rdc.damage.activity.PhotoActivity">
 
-    <com.rdc.p2p.widget.PhotosVP
+    <com.rdc.damage.widget.PhotosVP
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/photosVP_act_photo">
-    </com.rdc.p2p.widget.PhotosVP>
+    </com.rdc.damage.widget.PhotosVP>
 
 </LinearLayout>
