@@ -195,18 +195,18 @@ public class PeerListFragment extends BaseFragment<PeerListPresenter> implements
 
 
 
-            PeerBean pear = new PeerBean();
-            pear.setNickName("ss");
-            list.add(pear);
-            mPresenter.updatePeerList(list);
-            mPresenter.addPeer(pear);
-            mRvPeerList.setVisibility(View.VISIBLE);
-            mLlLoadingPeersInfo.setVisibility(View.GONE);
-            mTvTipNonePeer.setVisibility(View.GONE);
-
-//            mRvPeerList.setVisibility(View.GONE);
+//            PeerBean pear = new PeerBean();
+//            pear.setNickName("ss");
+//            list.add(pear);
+//            mPresenter.updatePeerList(list);
+//            mPresenter.addPeer(pear);
+//            mRvPeerList.setVisibility(View.VISIBLE);
 //            mLlLoadingPeersInfo.setVisibility(View.GONE);
-//            mTvTipNonePeer.setVisibility(View.VISIBLE);
+//            mTvTipNonePeer.setVisibility(View.GONE);
+
+            mRvPeerList.setVisibility(View.GONE);
+            mLlLoadingPeersInfo.setVisibility(View.GONE);
+            mTvTipNonePeer.setVisibility(View.VISIBLE);
         }else {
             mRvPeerList.setVisibility(View.VISIBLE);
             mLlLoadingPeersInfo.setVisibility(View.GONE);
