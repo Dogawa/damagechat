@@ -12,6 +12,12 @@
             android:layout_height="wrap_content"
             android:text="共享屏幕"/>
         <Button
+            android:id="@+id/btnStopShareScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止共享"/>
+
+        <Button
             android:id="@+id/btnStore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
