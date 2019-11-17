@@ -197,11 +197,18 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
         mBtnStopSharing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                sendStopMessage();
                 onStopScreenRecord();
                 finish();
             }
         });
 
+    }
+
+    private void sendStopMessage() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("stop");
+        tcpIpBinder.addHandler(stringBuffer.toString());
     }
 
     @Override
@@ -336,13 +343,14 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
         public void onReceive(Context context, Intent intent) {
             String strMsg = intent.getStringExtra("MSG");
             String[] strArr = strMsg.split(";");
-            if(strArr[0].equals("canvas")){
+            if (strArr[0].equals("canvas")) {
                 float x = Float.parseFloat(strArr[1]);
                 float y = Float.parseFloat(strArr[2]);
                 int action = Integer.parseInt(strArr[3]);
                 mPaletteView.dispatchTouchEvent(x, y, action);
                 Log.e("NetchartActivity", "TcpIpBroadReceiver onReceive();" + strMsg);
-            }else{
+            }else if(strArr[0].equals("stop")) {
+                finish();
 //                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
             }
         }
