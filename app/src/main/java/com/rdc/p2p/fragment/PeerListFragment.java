@@ -196,9 +196,9 @@ public class PeerListFragment extends BaseFragment<PeerListPresenter> implements
 //            mLlLoadingPeersInfo.setVisibility(View.GONE);
 //            mTvTipNonePeer.setVisibility(View.GONE);
 
-//            mRvPeerList.setVisibility(View.GONE);
-//            mLlLoadingPeersInfo.setVisibility(View.GONE);
-//            mTvTipNonePeer.setVisibility(View.VISIBLE);
+            mRvPeerList.setVisibility(View.GONE);
+            mLlLoadingPeersInfo.setVisibility(View.GONE);
+            mTvTipNonePeer.setVisibility(View.VISIBLE);
         }else {
             mRvPeerList.setVisibility(View.VISIBLE);
             mLlLoadingPeersInfo.setVisibility(View.GONE);
