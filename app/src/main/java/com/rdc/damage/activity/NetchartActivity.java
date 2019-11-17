@@ -287,31 +287,40 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("command;");
         switch (v.getId()) {
             case R.id.undo:
                 mPaletteView.undo();
+                stringBuffer.append("undo");
                 break;
             case R.id.redo:
                 mPaletteView.redo();
+                stringBuffer.append("redo");
                 break;
             case R.id.pen:
                 v.setSelected(true);
                 mEraserView.setSelected(false);
                 mPaletteView.setMode(PaletteView.Mode.DRAW);
+                stringBuffer.append("pen");
                 break;
             case R.id.eraser:
                 v.setSelected(true);
                 mPenView.setSelected(false);
                 mPaletteView.setMode(PaletteView.Mode.ERASER);
+                stringBuffer.append("eraser");
                 break;
             case R.id.clear:
                 mPaletteView.clear();
+                stringBuffer.append("clear");
                 break;
             case R.id.btnStore:
                 saveImage();
+                stringBuffer.append("save");
                 break;
-
         }
+        Log.e("NetchartActivity", "click envent " + stringBuffer.toString());
+        tcpIpBinder.addHandler(stringBuffer.toString());
     }
 
     private void initPaletteView() {
@@ -343,6 +352,7 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
         public void onReceive(Context context, Intent intent) {
             String strMsg = intent.getStringExtra("MSG");
             String[] strArr = strMsg.split(";");
+            Log.e("NetchartActivity", "TcpIpBroadReceiver onReceive();" + strMsg);
             if (strArr[0].equals("canvas")) {
                 float x = Float.parseFloat(strArr[1]);
                 float y = Float.parseFloat(strArr[2]);
@@ -352,6 +362,28 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
             }else if(strArr[0].equals("stop")) {
                 finish();
 //                mPaletteView.setBackground(getDrawable(R.drawable.demage_base));
+            }else if (strArr[0].equals("command")) {
+                switch (strArr[1]) {
+                    case "undo":
+                        mPaletteView.undo();
+                        break;
+                    case "redo":
+                        mPaletteView.redo();
+                        break;
+                    case "pen":
+                        mPenView.setSelected(true);
+                        mEraserView.setSelected(false);
+                        mPaletteView.setMode(PaletteView.Mode.DRAW);
+                        break;
+                    case "eraser":
+                        mPenView.setSelected(true);
+                        mPenView.setSelected(false);
+                        mPaletteView.setMode(PaletteView.Mode.ERASER);
+                        break;
+                    case "clear":
+                        mPaletteView.clear();
+                        break;
+                }
             }
         }
     }
