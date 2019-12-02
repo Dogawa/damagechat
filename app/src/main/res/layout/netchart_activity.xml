@@ -21,7 +21,7 @@
             android:id="@+id/btnStore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="保存"/>
+            android:text="保存图片"/>
         <ImageView
             android:id="@+id/undo"
             android:layout_width="wrap_content"

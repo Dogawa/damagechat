@@ -121,7 +121,6 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
 
         IsServer = mBundle.getBoolean("IsServer");
         IpAddress = mBundle.getString("IpAddress");
-
         Intent serviceIntent = new Intent(NetchartActivity.this, TCPIPService.class);
         serviceIntent.putExtra("IpAddress",IpAddress);
         serviceIntent.putExtra("IsServer",IsServer);
@@ -158,6 +157,7 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
                     Toast.makeText(NetchartActivity.this,"等待对方来发送",Toast.LENGTH_LONG).show();
                     return;
                 }
+                mBtnBg.setEnabled(false);
                 HandlerThread handlerThread = new HandlerThread("start");
                 handlerThread.start();
                 final SocketThread socketThread = SocketManager.getInstance().getSocketThreadByIp(IpAddress);
@@ -189,7 +189,6 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
 //                mPaletteView.dispatchTouchEvent((float)545.3176,(float)477.84088,2);
 //                mPaletteView.dispatchTouchEvent((float)568.7038,(float)518.3256,1);
                 doRecordScreen();
-
             }
         });
 
@@ -202,6 +201,10 @@ public class NetchartActivity extends AppCompatActivity implements View.OnClickL
                 finish();
             }
         });
+
+        if (IsServer) {
+            mBtnBg.setVisibility(View.GONE);
+        }
 
     }
 
